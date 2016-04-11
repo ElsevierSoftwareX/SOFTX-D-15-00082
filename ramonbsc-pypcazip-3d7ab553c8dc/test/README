@@ -1,0 +1,15 @@
+Tests and examples for pyPcazip.
+
+To test your installation:
+./run_tests.sh
+
+- note the test of AMBER netcdf format files will fail if you have not
+installed the required additional libraries (see installation instructions).
+
+To put pyPcazip through its paces:
+./run_basic_examples.sh
+
+To check out Amber netcdf4 related features:
+./run_ncdf_examples.sh
+
+

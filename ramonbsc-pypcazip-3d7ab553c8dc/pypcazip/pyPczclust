@@ -1,0 +1,24 @@
+#!/usr/bin/env python -W ignore
+'''
+                 *** The command line interface for pyPczclust ***                                                                                                                                  
+'''
+
+import argparse
+from pcazip import pypczclust
+from pcazip._version import __version__
+
+########################################################
+#                      ENTRY POINT                     #
+########################################################
+parser = argparse.ArgumentParser()
+mandatory = parser.add_argument_group('Mandatory arguments')
+mandatory.add_argument('-i','--pczfile', required=True, help='Input pczfile to cluster.')
+mandatory.add_argument('-o','--outfile', required=True, help='Output file with cluster data.')
+parser.add_argument('-b','--bins', type=int, default=10, help='number of bins in each dimension. Default: 10.')
+parser.add_argument('-d','--dims', type=int, default=3, help='number of dimensions in the clustering histogram. Default: 3.')
+parser.add_argument('-v','--verbosity', action='count', help="Increase output verbosity.")
+parser.add_argument('-V','--version', action='version', version=__version__)
+
+args = parser.parse_args()
+    
+pypczclust.pczclust(args)

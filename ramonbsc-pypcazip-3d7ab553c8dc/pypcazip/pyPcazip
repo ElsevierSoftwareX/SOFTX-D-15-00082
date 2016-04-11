@@ -1,0 +1,97 @@
+#!/usr/bin/env python -W ignore
+'''
+                 *** The command line interface for pyPcazip ***                                                                                                                                  
+'''
+
+# General python libraries import.
+import argparse
+from pcazip import pypcazip
+from pcazip._version import __version__
+
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument('-V', '--version', action='version', version=__version__)
+
+# Mandatory command line arguments:
+mandatory = parser.add_argument_group("Mandatory arguments")
+group = mandatory.add_mutually_exclusive_group()
+
+group.add_argument('-i','--input', nargs='*', type=str,  help='''List of one or
+more trajectory files. Each can have a range selection of the form
+(start:stop:step) appended to it (e.g. \"traj.dcd(5:300:10)\").''')
+
+group.add_argument('-a','--album', nargs='*', type=str, help='''List of one or
+more \"album\" files each of which contains, one per line, a list of trajectory
+files to process. Each can feature the (start:stop:step) range selection.''')
+
+mandatory.add_argument('-t','--topology', nargs='*',  type=str, help='''A list of one or more topology files. There must be either just one for all the
+trajectory/album files, or one for each trajectory/album file.''')
+
+mandatory.add_argument('-o', '--output',  type=str, default=None, help='''The output file containing the compressed trajectory.''')
+
+# Common optional arguments
+common = parser.add_argument_group('Common optional arguments')
+common.add_argument('-e', '--evecs', type=int, default=None, help='''Specify
+the number of eigenvectors to be included in the compressed file. Overrides any
+-q setting.''')
+
+common.add_argument('-m','--mask', nargs='*', type=str, default=None, help='''A
+PDB file containing the subset of atoms to be analysed. For complex selections this may be
+simpler than using the \"-s\" option. If used, there must be either one mask
+file for all trajectory/album files, or one mask file for each trajectory/album
+file.''')
+
+common.add_argument('-q', '--quality', type=float, default=90.0,
+help='''Specify the quality of the compressed file, in terms of percentage of
+the total variance captured in the range [0.0 .. 100.0]. Default: 90.0''')
+
+common.add_argument('-s','--selection',  nargs='*', type = str, default=None, help='''
+Atom selection according to Charmm syntax - see: 
+http://mdanalysis.googlecode.com/git/package/doc/html/documentation_pages/selections.html. 
+If the user does not provide a selection all atoms in the system will be 
+selected. If specified, there must be either one selection string for all the
+trajectory/album files, or one string for each trajectory/album file.''')
+
+common.add_argument('-v', '--verbosity', action='count', help="Increase output verbosity.")
+
+
+# Other optional parameters:
+rare = parser.add_argument_group('Less common optional arguments')
+rare.add_argument('-c', '--centre', type=str, default=None, help='''Remove PBC jumps by placing these atoms at the centre of the box''')
+
+rare.add_argument('-f','--file_version', type=str, default='UNKN',
+help="Override the default PCZ version to write [PCZ4 | PCZ6 | PCZ7]")
+
+rare.add_argument('-l', '--lowmem', action='store_true', help='''Reduce the memory
+usage of the program. May impact on compression speed.''')
+
+rare.add_argument('--fast', action='store_true', help="Use a fast approximate diagonalisation method.")
+
+rare.add_argument('--mpi', action='store_true', help='''Use MPI parallisation,
+if available.''')
+
+rare.add_argument('--nopca', action='store_true', help='''Do not run the
+the pca analysis and generate no pcz/compressed files. Of most use in 
+conjunction with the --trj_output option.''')
+
+rare.add_argument('-O', '--optimise', action='store_true', help='''Optimise the
+trajectory ensemble for faster processing. Involves the creation of temporary
+files so performance improvement will be problem-dependent.''')
+
+rare.add_argument('-p', '--pdb_out', type=str, default=None, help='''Create a 
+pdb file containing the atoms selected by any -mask or -s arguments i
+provided.''')
+
+rare.add_argument('--tests', action='store_true', help='''If the user selects this option,
+a folder containing example trajectory files and tests to verify the correct
+installation and performance of the
+pyPcazip suite of tools will be downloaded and testing will be carried out.''')
+
+rare.add_argument('--trj_output', type=str, default=None, help='''Create a
+trajectory file for the selected atoms and frames.''')
+
+# Now run:
+args = parser.parse_args()
+pypcazip.pcazip(args)
+

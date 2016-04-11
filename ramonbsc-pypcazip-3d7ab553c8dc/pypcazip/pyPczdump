@@ -1,0 +1,42 @@
+#!/usr/bin/env python -W ignore
+'''
+                 *** The command line interface for pyPczdump ***                                                                                                                                  
+'''
+
+import argparse
+from pcazip import pypczdump
+from pcazip._version import __version__
+														
+#########################################################################################
+#																						#
+#									ENTRY POINT											#
+#																						#
+#########################################################################################
+
+parser = argparse.ArgumentParser()
+mandatory = parser.add_argument_group('Mandatory argument')
+# Mandatory command line arguments:
+mandatory.add_argument('-i','--input',  required=True, help='''Input pczfile''')
+
+# Optional command line arguments:
+group = parser.add_mutually_exclusive_group()
+group.add_argument('-n','--info', action='store_true', help='''Print  basic information out of the compressed file such as the number of atoms, of frames and of eigenvectors and the percent of the variance captured.''')
+group.add_argument('-a','--avg', action='store_true', help='''Output the average structure in PDB format.''')
+group.add_argument('-c','--coll', action='store_true', help='''Collectivity metric, K, for each eigenvector.
+Modes producing most collective motion in the system will have high K values.''')
+group.add_argument('-e','--evec', type=int, help='''Print the selected eigenvector.''')
+group.add_argument('-f','--fluc', type=int, help='''Print the atomic fluctuations associated with the selected eigenvector.''')
+group.add_argument('-l','--evals', action='store_true', help='''List the eigenvalues.''')
+group.add_argument('-m','--anim', type=int, help='''Produce a PDB file animating the motion of the molecule along a specific eigenvector/principal component.''')
+group.add_argument('-p','--proj', type=int, help='''Print the projections of each snapshot along the selected eigenvector.''')
+group.add_argument('-r','--rms', type=int, help='''Print the rmsd of each frame in the trajectory from the structure of the specified snapshot.''')
+
+parser.add_argument('-o','--output', help='''Name of output file where the
+information will be saved.''')
+parser.add_argument('--pdb', help='''Name of pdb reference file for use with --avg and --anim options.''')
+parser.add_argument('-v','--verbosity', action='count', help="Increase output verbosity.")
+parser.add_argument('-V','--version', action='version', version=__version__)
+
+# Now run:
+args = parser.parse_args()
+pypczdump.pczdump(args)
